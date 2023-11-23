@@ -4,16 +4,20 @@ const dotenv = require('dotenv');
 const path = require('path');
 const openai = require('openai');
 
+// Explicación: Importamos las librerías necesarias para construir la aplicación.
 dotenv.config();
 
+// Explicación: Configuramos una aplicación Express, indicamos el uso de JSON y archivos estáticos.
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
+// Explicación: Configuramos una ruta para manejar peticiones GET a la raíz y enviar el archivo 'index.html'.
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Explicación: Configuramos la clave de la API de OpenAI utilizando la clave almacenada en las variables de entorno.
 openai.apiKey = process.env.OPENAI_API_KEY;
 
 /* VERSION 1.0 solo respuestas de chatGTP */
@@ -50,6 +54,8 @@ openai.apiKey = process.env.OPENAI_API_KEY;
 /* end VERSION 1.0 solo respuestas de chatGTP */
 
 /* VERSION 1.5 */
+/* Explicación: Configuramos una ruta para manejar peticiones POST a '/api/chatbot'.
+Utilizamos la API de OpenAI para obtener respuestas basadas en el mensaje y el contexto proporcionados.*/
 app.post('/api/chatbot', async (req, res) => {
     try {
         const { message, context } = req.body;
@@ -79,9 +85,9 @@ app.post('/api/chatbot', async (req, res) => {
         res.json({ reply });
 
     } catch (error) {
-        // console.error(error); --> Más fácil de explicar para cursos
+        // console.error(error); <-- Más fácil de explicar para cursos
         console.error(error.response ? error.response.data : error.message);
-        res.status(500).json({ error: 'Error al procesar la solicitud' });
+        res.status(500).json({ error: 'Error al procesar la solicitud', details: error.message });
     }
 });
 /* end VERSION 1.5 */
